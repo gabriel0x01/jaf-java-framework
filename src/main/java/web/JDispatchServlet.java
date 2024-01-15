@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serial;
 
-public class JafDispatchServlet extends HttpServlet {
+public class JDispatchServlet extends HttpServlet {
     @Serial
     private static final long serialVersionUID = 1L;
 

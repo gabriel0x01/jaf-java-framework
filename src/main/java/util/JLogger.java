@@ -3,7 +3,7 @@ package util;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class JafLogger {
+public class JLogger {
     public static final String GREEN  = "\u001B[32m";
     public static final String YELLOW = "\u001B[33m";
     public static final String WHITE  = "\u001B[37m";
