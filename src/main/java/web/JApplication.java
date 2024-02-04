@@ -1,11 +1,14 @@
 package web;
 
+import java.io.File;
+import java.util.List;
+
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
-import util.JLogger;
 
-import java.io.File;
+import discover.ClassDiscover;
+import util.JLogger;
 
 public class JApplication {
     public static void run(Class<?> sourceClass) {
@@ -18,7 +21,15 @@ public class JApplication {
         try {
             ini = System.currentTimeMillis();
 
-            JLogger.log("Embeded Web Container", "Starting (...)"  + sourceClass.getSimpleName());
+            JLogger.log("Embeded Web Container", "Starting... "  + sourceClass.getSimpleName());
+            
+            // class explorer
+            
+            List<String> allClasses = ClassDiscover.retrieveAllClasses(sourceClass);
+            
+            for (String classFound : allClasses) {
+            	JLogger.log("Class Discover", "Class Found: " + classFound);
+            }
 
             Tomcat tomcat = new Tomcat();
             JLogger.log("Embeded Web Container", "Web Container started on port 8080");
@@ -28,9 +39,9 @@ public class JApplication {
             tomcat.setConnector(connector);
 
             Context context = tomcat.addContext("", new File(".").getAbsolutePath());
-            Tomcat.addServlet(context, "JafDispatchServlet", new JDispatchServlet());
+            Tomcat.addServlet(context, "JDispatchServlet", new JDispatchServlet());
 
-            context.addServletMappingDecoded("/*", "JafDispatchServlet");
+            context.addServletMappingDecoded("/*", "JDispatchServlet");
 
             tomcat.start();
             fim = System.currentTimeMillis();

@@ -15,7 +15,7 @@ public class JLogger {
 
 
     public static void showBanner() {
-        System.out.println(BLUE);
+        System.out.println(RED);
         System.out.println("  ______          _____    ______   ______  ");
         System.out.println(" / / / /         / /   |  / ____/   \\ \\ \\ \\ ");
         System.out.println("/ / / /     __  / / /| | / /_        \\ \\ \\ \\  Jaf's a framework (Jaf)");
@@ -25,7 +25,7 @@ public class JLogger {
     }
     public static void log(String modulo, String mensagem) {
         String date = LocalDateTime.now().format(DATE);
-        System.out.printf(WHITE+"%15s "+RED+"%-30s:"+WHITE+"%s\n"+RESET, date, modulo, mensagem);
+        System.out.printf(YELLOW+"%15s "+WHITE+"%-30s:"+GREEN+"%s\n"+RESET, date, modulo, mensagem);
     }
 
 }
