@@ -13,7 +13,6 @@ public class JLogger {
 
     public static DateTimeFormatter DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-
     public static void showBanner() {
         System.out.println(RED);
         System.out.println("  ______          _____    ______   ______  ");

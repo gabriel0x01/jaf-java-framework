@@ -23,13 +23,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import util.JLogger;
 
 public class JDispatchServlet extends HttpServlet {
-    @Serial
+	
     private static final long serialVersionUID = 1L;
-
+    
     @Override
-	protected void service(HttpServletRequest request, HttpServletResponse response)
+	protected void service(HttpServletRequest request, HttpServletResponse response) // Servlet geral e genérico para tratar todo tipo de requisição
 			throws IOException, ServletException {
-		// preciso ignorar o favIcon
+    	
+		// ignora favIcon
 		if (request.getRequestURL().toString().endsWith("/favicon.ico")) {
 			return;
 		}
@@ -40,23 +41,26 @@ public class JDispatchServlet extends HttpServlet {
 		String httpMethod = request.getMethod().toUpperCase();
 		String key = httpMethod + url;
 		RequestControllerData data = ControllersMap.values.get(key);
+		
 		JLogger.log("JDispatcherServlet", "URL:" + url + "(" + httpMethod + ") - Handler "
 				+ data.getControllerClass() + "." + data.getControllerMethod());
 
 		Object controller;
+		
 		JLogger.log("DispatcherServlet", "Searching for controller Instance");
-		// verificar  instancia da classe correspondente
+		
+		// verificar se existe instancia da classe correspondente
 		try {
 			controller = ControllersInstances.instances.get(data.controllerClass);
 			if (controller == null) {
-				JLogger.log("DispatcherServlet", "Creating new Controller Instance");
+				JLogger.log("DispatcherServlet", "Creating new Controller Instance...");
 				controller = Class.forName(data.controllerClass).getDeclaredConstructor().newInstance();
 				ControllersInstances.instances.put(data.controllerClass, controller);
 				
 				injectDependencies(controller);
 			}
 
-			// preciso extrair o método desta classe 
+			// extrair o método da classe 
 			Method controllerMethod = null;
 			for (Method method : controller.getClass().getMethods()) {
 				if (method.getName().equals(data.controllerMethod)) {
@@ -94,7 +98,6 @@ public class JDispatchServlet extends HttpServlet {
 		}
 	}
 
-	
 	private String readBytesFromRequest(HttpServletRequest request) throws Exception {
 		StringBuilder str = new StringBuilder();
 		String line;
@@ -109,13 +112,16 @@ public class JDispatchServlet extends HttpServlet {
 	private void injectDependencies(Object client) throws Exception{
 		for (Field attr: client.getClass().getDeclaredFields()) {
 			String attrType = attr.getType().getName();
-			JLogger.log("JDispatcherServlet",  "Injected "+attr.getName() + " Field has type "+attrType);			
+			
+			JLogger.log("JDispatcherServlet",  "Injected "+attr.getName() + " Field has type "+attrType);	
+			
 			Object serviceImpl;
+			
 			if (DependencyInjectionMap.objects.get(attrType) == null) {
-				// declaração da interface?
+				// pela declaração da interface
 				JLogger.log("DependencyInjection", "Couldn't find Instance for "+attrType);
 				String implType = ServiceImplementationMap.implementations.get(attrType);
-				// declaracao da implementacao
+				// pela declaracao da implementacao
 				if (implType != null) {
 					JLogger.log("DependencyInjection", "Found Instance for "+implType);
 					

@@ -22,7 +22,9 @@ public class JApplication {
 
 		// zera o log do apache tomcat
 		java.util.logging.Logger.getLogger("org.apache").setLevel(java.util.logging.Level.OFF);
+		
 		long ini, fim;
+		
 		JLogger.showBanner();
 
 		try {
@@ -32,33 +34,38 @@ public class JApplication {
 
 			extractMetaData(sourceClass);
 
-			Tomcat tomcat = new Tomcat();
+			Tomcat tomcat = new Tomcat(); // Permitir iniciar o embed tomcat 
 			JLogger.log("Embeded Web Container", "Web Container started on port 8080");
+			
 			Connector connector = new Connector();
-
 			connector.setPort(8080);
 			tomcat.setConnector(connector);
 
-			Context context = tomcat.addContext("", new File(".").getAbsolutePath());
+			Context context = tomcat.addContext("", new File(".").getAbsolutePath()); // Onde tomcat vai procurar classes (pacote da aplicação)
 			Tomcat.addServlet(context, "JDispatchServlet", new JDispatchServlet());
 
-			context.addServletMappingDecoded("/*", "JDispatchServlet");
+			context.addServletMappingDecoded("/*", "JDispatchServlet"); // Servlet Dispatch será executado em qualquer requisição
 
 			tomcat.start();
+			
 			fim = System.currentTimeMillis();
+			
 			JLogger.log("Embeded Web Container", "started in " + ((double) (fim - ini) / 1000) + " seconds");
+			
 			tomcat.getServer().await();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+    // Anotações elementos descritivos que guiarão as ações do servlet
 
 	private static void extractMetaData(Class<?> sourceClass) throws Exception {
 
 		List<String> allClasses = ClassDiscover.retrieveAllClasses(sourceClass);
 		for (String jClass : allClasses) {
-			// anotações das classes
+			// anotações da classe
 			Annotation annotations[] = Class.forName(jClass).getAnnotations();
 			for (Annotation classAnnotation : annotations) {
 				if (classAnnotation.annotationType().getName().equals("annotations.JController")) {
@@ -77,11 +84,11 @@ public class JApplication {
 
 		}
 
-		/* varrendo estrutura de dados */
-//		for (RequestControllerData item : ControllersMap.values.values()) {
-//			JLogger.log("", "    " + item.httpMethod + ":" + item.url + " [" + item.controllerClass + "."
-//					+ item.controllerMethod + "]");
-//		}
+		// varrendo estrutura de dados 
+		for (RequestControllerData item : ControllersMap.values.values()) {
+			JLogger.log("", "    " + item.httpMethod + ":" + item.url + " [" + item.controllerClass + "."
+					+ item.controllerMethod + "]");
+		}
 
 	}
 
@@ -104,6 +111,7 @@ public class JApplication {
 
 					httpMethod = "POST";
 				}
+				// Isere as informacoes na estrutura de dados, para que o dispatch servlet consulte posteriormente
 				RequestControllerData getData = new RequestControllerData(httpMethod, path, className,
 						method.getName());
 				ControllersMap.values.put(httpMethod + path, getData);
